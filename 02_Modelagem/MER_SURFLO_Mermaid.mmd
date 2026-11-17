@@ -1,0 +1,276 @@
+erDiagram
+    %% SURFLO — MER logique basé sur le schéma SQLite du projet
+    %% Types et contraintes : PK = clé primaire, FK = clé étrangère,
+    %% UK = UNIQUE sur une colonne. Les contraintes UNIQUE composites
+    %% sont rappelées dans les commentaires placés sous les entités.
+
+    ENTIDADE_RESPONSAVEL {
+        INTEGER id_entidade PK
+        TEXT nome "NOT NULL"
+        TEXT tipo_entidade
+    }
+
+    CAMPEONATO {
+        INTEGER id_campeonato PK
+        TEXT nome "NOT NULL"
+        TEXT data_inicio "NOT NULL"
+        TEXT data_fim "NOT NULL"
+        INTEGER id_entidade FK "NOT NULL"
+    }
+
+    CATEGORIA {
+        INTEGER id_categoria PK
+        TEXT nome UK "NOT NULL UNIQUE"
+        TEXT familia_premiacao "NOT NULL CHECK PRO ESPERANCA OPEN"
+    }
+
+    PRAIA {
+        INTEGER id_praia PK
+        TEXT nome "NOT NULL"
+        TEXT cidade "NOT NULL"
+        TEXT estado "NOT NULL"
+    }
+
+    RESPONSAVEL_PRAIA {
+        INTEGER id_responsavel_praia PK
+        TEXT primeiro_nome "NOT NULL"
+        TEXT sobrenome "NOT NULL"
+        INTEGER id_entidade FK "NOT NULL"
+        INTEGER id_praia FK "NOT NULL"
+    }
+    %% UNIQUE composite : RESPONSAVEL_PRAIA(id_responsavel_praia, id_praia)
+
+    ATLETA {
+        INTEGER id_atleta PK
+        TEXT primeiro_nome "NOT NULL"
+        TEXT sobrenome "NOT NULL"
+        TEXT data_nascimento
+        TEXT pais_origem "NOT NULL DEFAULT Brasil"
+        INTEGER id_categoria FK "NOT NULL"
+    }
+    %% UNIQUE composite : ATLETA(id_atleta, id_categoria)
+
+    JUIZ {
+        INTEGER id_juiz PK
+        TEXT primeiro_nome "NOT NULL"
+        TEXT sobrenome "NOT NULL"
+    }
+
+    SPONSOR {
+        INTEGER id_sponsor PK
+        TEXT nome "NOT NULL"
+        TEXT email UK
+        TEXT telefone
+        TEXT site
+    }
+
+    CLIENTE {
+        INTEGER id_cliente PK
+        TEXT primeiro_nome "NOT NULL"
+        TEXT sobrenome "NOT NULL"
+        TEXT email UK
+        TEXT telefone
+    }
+
+    VOLUNTARIO {
+        INTEGER id_voluntario PK
+        TEXT primeiro_nome "NOT NULL"
+        TEXT sobrenome "NOT NULL"
+    }
+
+    CAMPEONATO_CATEGORIA {
+        INTEGER id_campeonato PK, FK
+        INTEGER id_categoria PK, FK
+    }
+
+    ETAPA {
+        INTEGER id_etapa PK
+        TEXT nome "NOT NULL"
+        TEXT data_inicio "NOT NULL"
+        TEXT data_fim "NOT NULL"
+        INTEGER capacidade "NOT NULL CHECK > 0"
+        INTEGER id_praia FK "NOT NULL"
+        INTEGER id_campeonato FK "NOT NULL"
+    }
+
+    ETAPA_CATEGORIA {
+        INTEGER id_etapa PK, FK
+        INTEGER id_categoria PK, FK
+    }
+
+    INSCRICAO {
+        INTEGER id_inscricao PK
+        INTEGER id_atleta FK "NOT NULL"
+        INTEGER id_etapa FK "NOT NULL"
+        INTEGER id_categoria FK "NOT NULL"
+        TEXT data_inscricao "NOT NULL"
+    }
+    %% UNIQUE composite : INSCRICAO(id_atleta, id_etapa)
+    %% FK composites : (id_atleta, id_categoria) -> ATLETA
+    %%                   (id_etapa, id_categoria) -> ETAPA_CATEGORIA
+
+    BATERIA {
+        INTEGER id_bateria PK
+        TEXT fase "NOT NULL CHECK CLASSIFICATORIA SEMIFINAL FINAL"
+        INTEGER numero_bateria "NOT NULL"
+        TEXT data_hora
+        TEXT status "NOT NULL DEFAULT EM_FORMACAO"
+        INTEGER id_etapa FK "NOT NULL"
+        INTEGER id_categoria FK "NOT NULL"
+    }
+    %% UNIQUE composite : BATERIA(id_etapa, id_categoria, fase, numero_bateria)
+    %% FK composite : (id_etapa, id_categoria) -> ETAPA_CATEGORIA
+
+    JUIZ_BATERIA {
+        INTEGER id_juiz PK, FK
+        INTEGER id_bateria PK, FK
+    }
+
+    PARTICIPACAO_BATERIA {
+        INTEGER id_participacao_bateria PK
+        INTEGER id_atleta FK "NOT NULL"
+        INTEGER id_bateria FK "NOT NULL"
+    }
+    %% UNIQUE composites : (id_atleta, id_bateria)
+    %%                     (id_participacao_bateria, id_bateria)
+
+    AVALIACAO {
+        INTEGER id_avaliacao PK
+        INTEGER id_participacao_bateria FK "NOT NULL"
+        INTEGER id_bateria FK "NOT NULL"
+        INTEGER id_juiz FK "NOT NULL"
+        REAL nota "NOT NULL CHECK 0 A 10"
+    }
+    %% UNIQUE composite : AVALIACAO(id_participacao_bateria, id_juiz)
+    %% FK composites : (id_participacao_bateria, id_bateria) -> PARTICIPACAO_BATERIA
+    %%                   (id_juiz, id_bateria) -> JUIZ_BATERIA
+
+    RESULTADO_BATERIA {
+        INTEGER id_participacao_bateria PK, FK
+        INTEGER id_bateria FK "NOT NULL"
+        REAL pontuacao_total "NOT NULL CHECK 0 A 40"
+        INTEGER posicao_bateria "NOT NULL CHECK 1 A 4"
+        INTEGER qualificado "NOT NULL CHECK 0 OU 1"
+    }
+    %% FK composite : (id_participacao_bateria, id_bateria) -> PARTICIPACAO_BATERIA
+
+    RESULTADO_ETAPA {
+        INTEGER id_resultado_etapa PK
+        INTEGER id_atleta FK "NOT NULL"
+        INTEGER id_etapa FK "NOT NULL"
+        INTEGER id_categoria FK "NOT NULL"
+        INTEGER pontos_obtidos "NOT NULL CHECK >= 0"
+    }
+    %% UNIQUE composite : RESULTADO_ETAPA(id_atleta, id_etapa)
+    %% FK composites : (id_atleta, id_categoria) -> ATLETA
+    %%                   (id_etapa, id_categoria) -> ETAPA_CATEGORIA
+
+    CLASSIFICACAO_GERAL {
+        INTEGER id_classificacao_geral PK
+        INTEGER id_campeonato FK "NOT NULL"
+        INTEGER id_categoria FK "NOT NULL"
+        INTEGER id_atleta FK "NOT NULL"
+        INTEGER pontuacao_total "NOT NULL DEFAULT 0"
+        INTEGER quantidade_resultados_contabilizados "NOT NULL DEFAULT 0 CHECK 0 A 3"
+        INTEGER posicao_geral
+    }
+    %% UNIQUE composite : (id_campeonato, id_categoria, id_atleta)
+    %% FK composites : (id_campeonato, id_categoria) -> CAMPEONATO_CATEGORIA
+    %%                   (id_atleta, id_categoria) -> ATLETA
+
+    PREMIACAO {
+        INTEGER id_premiacao PK
+        TEXT familia_categoria "NOT NULL CHECK PRO ESPERANCA OPEN"
+        INTEGER posicao_geral "NOT NULL CHECK 1 A 16"
+        TEXT nome "NOT NULL"
+        REAL valor "NOT NULL DEFAULT 0 CHECK >= 0"
+    }
+    %% UNIQUE composite : PREMIACAO(familia_categoria, posicao_geral)
+
+    ATRIBUICAO_PREMIACAO {
+        INTEGER id_atribuicao PK
+        INTEGER id_premiacao FK "NOT NULL"
+        INTEGER id_classificacao_geral FK, UK "NOT NULL UNIQUE"
+    }
+
+    CONTRATO_PATROCINIO {
+        INTEGER id_sponsor PK, FK
+        INTEGER id_campeonato PK, FK
+        REAL valor_patrocinio "NOT NULL DEFAULT 0"
+        TEXT data_inicio
+        TEXT data_fim
+        TEXT tipo_patrocinio "NOT NULL"
+    }
+
+    INGRESSO {
+        INTEGER id_ingresso PK
+        INTEGER id_cliente FK
+        INTEGER id_etapa FK "NOT NULL"
+        REAL preco "NOT NULL CHECK >= 0"
+        TEXT data_compra "NOT NULL"
+        TEXT status "NOT NULL DEFAULT DISPONIVEL"
+    }
+
+    AUTORIZACAO {
+        INTEGER id_autorizacao PK
+        INTEGER id_responsavel_praia FK "NOT NULL"
+        INTEGER id_praia FK "NOT NULL"
+        INTEGER id_etapa FK, UK "NOT NULL UNIQUE"
+        TEXT status "NOT NULL"
+        TEXT data_solicitacao "NOT NULL"
+        TEXT data_decisao
+        TEXT data_inicio_validade
+        TEXT data_fim_validade
+    }
+    %% FK composite : (id_responsavel_praia, id_praia) -> RESPONSAVEL_PRAIA
+
+    ACAO_AMBIENTAL {
+        INTEGER id_acao_ambiental PK
+        TEXT descricao "NOT NULL"
+        TEXT data_acao "NOT NULL"
+        TEXT tipo_acao "NOT NULL"
+        INTEGER id_praia FK "NOT NULL"
+    }
+
+    PARTICIPACAO_ACAO {
+        INTEGER id_voluntario PK, FK
+        INTEGER id_acao_ambiental PK, FK
+    }
+
+    ENTIDADE_RESPONSAVEL ||--o{ CAMPEONATO : organiza
+    ENTIDADE_RESPONSAVEL ||--o{ RESPONSAVEL_PRAIA : emprega_ou_representa
+    PRAIA ||--o{ RESPONSAVEL_PRAIA : possui_responsaveis
+    CATEGORIA ||--o{ ATLETA : classifica
+    CAMPEONATO ||--o{ CAMPEONATO_CATEGORIA : inclui
+    CATEGORIA ||--o{ CAMPEONATO_CATEGORIA : participa
+    CAMPEONATO ||--o{ ETAPA : contem
+    PRAIA ||--o{ ETAPA : recebe
+    ETAPA ||--o{ ETAPA_CATEGORIA : abre
+    CATEGORIA ||--o{ ETAPA_CATEGORIA : disputa
+    ATLETA ||--o{ INSCRICAO : realiza
+    ETAPA_CATEGORIA ||--o{ INSCRICAO : recebe
+    ETAPA_CATEGORIA ||--o{ BATERIA : organiza
+    JUIZ ||--o{ JUIZ_BATERIA : avalia_em
+    BATERIA ||--o{ JUIZ_BATERIA : recebe_juizes
+    ATLETA ||--o{ PARTICIPACAO_BATERIA : compete
+    BATERIA ||--o{ PARTICIPACAO_BATERIA : contem_atletas
+    PARTICIPACAO_BATERIA ||--o{ AVALIACAO : recebe_notas
+    JUIZ_BATERIA ||--o{ AVALIACAO : atribui_notas
+    PARTICIPACAO_BATERIA ||--o| RESULTADO_BATERIA : gera
+    BATERIA ||--o{ RESULTADO_BATERIA : possui_resultados
+    ATLETA ||--o{ RESULTADO_ETAPA : obtem
+    ETAPA_CATEGORIA ||--o{ RESULTADO_ETAPA : classifica
+    CAMPEONATO_CATEGORIA ||--o{ CLASSIFICACAO_GERAL : agrega
+    ATLETA ||--o{ CLASSIFICACAO_GERAL : aparece_no_ranking
+    PREMIACAO ||--o{ ATRIBUICAO_PREMIACAO : e_atribuida
+    CLASSIFICACAO_GERAL ||--o| ATRIBUICAO_PREMIACAO : recebe
+    SPONSOR ||--o{ CONTRATO_PATROCINIO : assina
+    CAMPEONATO ||--o{ CONTRATO_PATROCINIO : recebe_apoio
+    CLIENTE o|--o{ INGRESSO : compra
+    ETAPA ||--o{ INGRESSO : disponibiliza
+    RESPONSAVEL_PRAIA ||--o{ AUTORIZACAO : concede
+    PRAIA ||--o{ AUTORIZACAO : e_autorizada
+    ETAPA ||--o| AUTORIZACAO : exige
+    PRAIA ||--o{ ACAO_AMBIENTAL : acolhe
+    VOLUNTARIO ||--o{ PARTICIPACAO_ACAO : participa
+    ACAO_AMBIENTAL ||--o{ PARTICIPACAO_ACAO : mobiliza

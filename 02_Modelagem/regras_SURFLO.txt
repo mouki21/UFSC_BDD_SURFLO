@@ -1,0 +1,262 @@
+REGRAS DE NEGÓCIO — SURFLO
+Gestão de Eventos de Surf e Conservação Marinha
+
+======================================================================
+1. ESCOPO DO SISTEMA, CAMPEONATO E ETAPAS
+======================================================================
+
+RN01. A implementação atual do SURFLO contempla um único campeonato.
+
+RN02. O campeonato é composto por cinco etapas.
+
+RN03. Cada etapa pertence ao único campeonato cadastrado no escopo atual.
+
+RN04. Cada etapa é realizada em uma única praia.
+
+RN05. Uma mesma praia pode receber mais de uma etapa, desde que em datas diferentes.
+
+RN06. Cada etapa possui datas e horários de realização definidos, além de uma capacidade máxima de público para a venda de ingressos.
+
+RN07. Cada etapa deve possuir uma autorização de uso da praia correspondente, concedida por um responsável competente e válida durante todo o período da etapa.
+
+======================================================================
+2. CATEGORIAS E ATLETAS
+======================================================================
+
+RN08. O campeonato possui exatamente cinco categorias esportivas:
+     a) Pro homem;
+     b) Pro mulher;
+     c) Open misto;
+     d) Esperança homem;
+     e) Esperança mulher.
+
+RN09. As cinco categorias fazem parte do campeonato e são oferecidas nas cinco etapas da implementação atual.
+
+RN10. Cada categoria possui 16 atletas cadastrados, totalizando 80 atletas no conjunto de dados da implementação.
+
+RN11. Um atleta pertence a uma categoria esportiva no contexto do campeonato.
+
+RN12. Um atleta pode participar de várias etapas do campeonato.
+
+RN13. Cada inscrição está associada a um único atleta, a uma única etapa e à categoria do atleta.
+
+RN14. Um atleta pode possuir no máximo uma inscrição por etapa, independentemente da categoria. Portanto, não pode se inscrever duas vezes na mesma etapa.
+
+RN15. Um atleta só pode se inscrever em uma categoria oferecida naquela etapa.
+
+RN16. A implementação de referência considera que os 80 atletas estão inscritos nas cinco etapas, totalizando 400 inscrições. Essa quantidade descreve os dados de teste e não impede que, em uma utilização futura, um atleta deixe de participar de alguma etapa.
+
+======================================================================
+3. FORMATO E ORGANIZAÇÃO DAS BATERIAS
+======================================================================
+
+RN17. Cada combinação de etapa e categoria segue um formato esportivo de 16 atletas.
+
+RN18. Cada bateria deve conter exatamente quatro atletas quando for finalizada.
+
+RN19. A fase classificatória é composta por quatro baterias de quatro atletas, totalizando 16 participantes por categoria e etapa.
+
+RN20. Em cada bateria classificatória, os dois atletas com as maiores pontuações avançam para as semifinais.
+
+RN21. A fase semifinal é composta por duas baterias de quatro atletas, totalizando oito participantes.
+
+RN22. Em cada semifinal, os dois atletas com as maiores pontuações avançam para a final.
+
+RN23. A final é composta por quatro atletas e determina as quatro primeiras posições da categoria naquela etapa.
+
+RN24. Um atleta pode participar de baterias sucessivas na mesma etapa somente quando tiver obtido a classificação necessária na fase anterior.
+
+RN25. Uma bateria possui uma fase identificada como classificatória, semifinal ou final e um status que indica se está em formação ou finalizada.
+
+RN26. Uma bateria não pode ser finalizada enquanto não possuir exatamente quatro atletas participantes.
+
+======================================================================
+4. JUÍZES, AVALIAÇÕES E RESULTADOS DAS BATERIAS
+======================================================================
+
+RN27. Cada bateria deve possuir exatamente quatro juízes designados para poder ser finalizada.
+
+RN28. Cada um dos quatro juízes deve atribuir uma nota a cada um dos quatro atletas da bateria.
+
+RN29. Cada nota deve ser um valor numérico entre 0 e 10, inclusive.
+
+RN30. Cada avaliação está associada a um único juiz, a um único atleta e a uma única bateria.
+
+RN31. Para cada atleta de uma bateria finalizada devem existir exatamente quatro avaliações, uma por juiz.
+
+RN32. Uma bateria finalizada deve possuir exatamente 16 avaliações: quatro juízes multiplicados por quatro atletas.
+
+RN33. A pontuação total de um atleta em uma bateria corresponde à soma das quatro notas recebidas.
+
+RN34. A pontuação total possível em uma bateria varia de 0 a 40 pontos.
+
+RN35. A classificação da bateria é determinada pela ordem decrescente da pontuação total dos atletas.
+
+RN36. Nas baterias classificatórias e nas semifinais, os dois atletas mais bem classificados são marcados como classificados para a fase seguinte. Na final, nenhum atleta é marcado como classificado para outra fase.
+
+RN37. Em caso de empate que afete a classificação ou a posição final, a decisão deve ser tomada pela organização e registrada no resultado. A implementação atual não define um critério esportivo automático de desempate.
+
+RN38. Depois que uma bateria for finalizada, suas avaliações e sua composição não devem ser alteradas por operações comuns do sistema.
+
+======================================================================
+5. RESULTADOS DAS ETAPAS E PONTUAÇÃO
+======================================================================
+
+RN39. O sistema registra o resultado de cada atleta em cada bateria, incluindo a pontuação total e a posição obtida naquela bateria.
+
+RN40. O resultado esportivo da etapa é utilizado para determinar a pontuação atribuída ao atleta para a classificação geral do campeonato.
+
+RN41. A implementação atual não mantém uma classificação final independente da etapa como produto principal. Ela registra os pontos obtidos por atleta, etapa e categoria, que serão utilizados no cálculo da classificação geral.
+
+RN42. A tabela de pontuação associa uma quantidade de pontos à posição final obtida pelo atleta na etapa.
+
+RN43. Para os dados de teste da implementação atual, foi adotado provisoriamente o seguinte exemplo de pontuação:
+     1º lugar: 100 pontos;
+     2º lugar: 90 pontos;
+     3º lugar: 80 pontos;
+     4º lugar: 70 pontos;
+     5º lugar: 60 pontos;
+     6º lugar: 55 pontos;
+     7º lugar: 50 pontos;
+     8º lugar: 45 pontos;
+     9º lugar: 40 pontos;
+     10º lugar: 35 pontos;
+     11º lugar: 30 pontos;
+     12º lugar: 25 pontos;
+     13º lugar: 20 pontos;
+     14º lugar: 15 pontos;
+     15º lugar: 10 pontos;
+     16º lugar: 5 pontos.
+
+RN44. A tabela de pontos da RN43 é uma hipótese de implementação para permitir os testes. Ela deverá ser validada ou substituída caso a organização do campeonato possua um regulamento oficial diferente.
+
+======================================================================
+6. CLASSIFICAÇÃO GERAL DO CAMPEONATO
+======================================================================
+
+RN45. A classificação geral é calculada separadamente para cada uma das cinco categorias.
+
+RN46. Para cada atleta, o sistema considera os três melhores resultados obtidos entre as cinco etapas.
+
+RN47. A pontuação geral de um atleta corresponde à soma dos seus três melhores resultados de etapa.
+
+RN48. Os resultados que não estiverem entre os três melhores continuam armazenados no banco de dados, mas não entram na soma da classificação geral.
+
+RN49. A classificação geral é ordenada pela pontuação total em ordem decrescente.
+
+RN50. Em caso de empate na pontuação geral, a implementação atual utiliza o identificador do atleta como critério técnico de ordenação determinística. Esse critério é provisório e não representa necessariamente um critério esportivo oficial.
+
+RN51. O critério oficial de desempate da classificação geral deverá ser definido pela organização. Uma possibilidade é comparar o melhor resultado individual entre as etapas, depois o segundo melhor resultado e assim sucessivamente.
+
+RN52. A visão VW_CLASSIFICACAO_GERAL_CALCULADA representa o cálculo dinâmico da classificação geral. A tabela CLASSIFICACAO_GERAL armazena uma fotografia dos resultados calculados no momento em que os dados são atualizados.
+
+======================================================================
+7. PREMIAÇÕES
+======================================================================
+
+RN53. As premiações são atribuídas exclusivamente com base na classificação geral final do campeonato.
+
+RN54. Não são atribuídas premiações específicas por etapa no escopo atual.
+
+RN55. As premiações são associadas à categoria ou à família de categorias e à posição obtida na classificação geral.
+
+RN56. O catálogo de premiações possui três famílias:
+     a) PRO: catálogo comum às categorias Pro homem e Pro mulher;
+     b) ESPERANÇA: catálogo comum às categorias Esperança homem e Esperança mulher;
+     c) OPEN: catálogo específico da categoria Open misto.
+
+RN57. Cada família de premiação possui posições previstas do 1º ao 16º lugar.
+
+RN58. A atribuição de uma premiação deve estar vinculada a um resultado da classificação geral, e não a um resultado isolado de uma etapa.
+
+======================================================================
+8. PATROCINADORES E CONTRATOS DE PATROCÍNIO
+======================================================================
+
+RN59. O campeonato pode contar com vários patrocinadores.
+
+RN60. Um patrocinador pode apoiar o campeonato de acordo com as condições acordadas com a organização.
+
+RN61. Cada contrato de patrocínio registra as informações relativas ao apoio oferecido e às condições acordadas.
+
+======================================================================
+9. BILHETERIA E CAPACIDADE DAS ETAPAS
+======================================================================
+
+RN62. Cada etapa pode disponibilizar ingressos ao público.
+
+RN63. Cada ingresso está associado a uma única etapa e a um único comprador.
+
+RN64. Cada ingresso possui preço, data de compra e status.
+
+RN65. Os status possíveis de um ingresso são DISPONIVEL, VENDIDO e CANCELADO.
+
+RN66. A quantidade de ingressos vendidos não pode ultrapassar a capacidade máxima definida para a etapa correspondente.
+
+RN67. O gerenciamento dos pagamentos não faz parte do escopo atual do projeto.
+
+======================================================================
+10. RESPONSÁVEIS E AUTORIZAÇÕES DE USO DAS PRAIAS
+======================================================================
+
+RN68. Um responsável por praia deve estar associado à praia pela qual possui competência ou responsabilidade.
+
+RN69. Uma solicitação de autorização está associada a uma etapa, à praia onde ela será realizada e ao responsável competente por essa praia.
+
+RN70. A autorização registra, no mínimo, as datas de solicitação e decisão, o status e o período de validade.
+
+RN71. O responsável indicado na autorização deve estar associado à mesma praia da etapa.
+
+RN72. Para ser válida, a autorização deve estar aprovada e cobrir integralmente o período de realização da etapa.
+
+RN73. Uma bateria não pode ser finalizada se a etapa correspondente não possuir uma autorização aprovada e válida para a praia e para todo o período do evento.
+
+======================================================================
+11. AÇÕES AMBIENTAIS E VOLUNTÁRIOS
+======================================================================
+
+RN74. Cada ação ambiental é realizada em uma única praia.
+
+RN75. Cada ação ambiental possui uma data, um tipo de atividade e uma descrição.
+
+RN76. Uma ação ambiental pode contar com vários voluntários.
+
+RN77. Um voluntário pode participar de várias ações ambientais.
+
+RN78. Cada participação de um voluntário em uma ação ambiental deve ser registrada.
+
+RN79. No escopo atual, os voluntários estão associados exclusivamente às ações ambientais.
+
+======================================================================
+12. HIPÓTESES E SIMPLIFICAÇÕES DA IMPLEMENTAÇÃO
+======================================================================
+
+H01. O banco de dados é implementado em torno de um único campeonato, mantendo a entidade CAMPEONATO no modelo.
+
+H02. O campeonato possui cinco etapas e cinco categorias.
+
+H03. As categorias são Pro homem, Pro mulher, Open misto, Esperança homem e Esperança mulher.
+
+H04. O conjunto de dados de demonstração contém 16 atletas por categoria, totalizando 80 atletas.
+
+H05. O formato esportivo de cada categoria em cada etapa prevê 16 atletas, quatro baterias classificatórias, duas semifinais e uma final.
+
+H06. Cada bateria finalizada contém exatamente quatro atletas, quatro juízes e 16 avaliações.
+
+H07. Cada avaliação possui nota entre 0 e 10; a pontuação do atleta na bateria é a soma das quatro notas.
+
+H08. Os dois melhores atletas de cada bateria classificatória e de cada semifinal avançam à fase seguinte.
+
+H09. O cálculo da classificação geral considera os três melhores resultados de etapa entre os cinco disponíveis.
+
+H10. A pontuação por colocação apresentada na RN43 é provisória e deve ser confirmada pela organização.
+
+H11. O critério de desempate da classificação geral apresentado na RN50 é apenas técnico e provisório. O critério esportivo oficial ainda precisa ser definido.
+
+H12. As premiações são exclusivamente gerais e organizadas em três famílias: PRO, ESPERANÇA e OPEN.
+
+H13. A bilheteria controla disponibilidade, venda, cancelamento e capacidade, mas não processa pagamentos.
+
+H14. A autorização deve corresponder à praia da etapa, estar aprovada e cobrir todo o período do evento.
+
+H15. Os voluntários participam exclusivamente das ações ambientais.
